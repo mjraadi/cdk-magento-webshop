@@ -1,0 +1,10 @@
+{
+  "python.defaultInterpreterPath": "venv/bin/python3",
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "python.linting.pylintArgs": ["--indent-string='  '"],
+  "python.formatting.autopep8Args": ["--indent-size=2", "--ignore E121"],
+  "python.formatting.provider": "autopep8",
+  "editor.detectIndentation": false,
+  "bashBeautify.tabSize": 2
+}
