@@ -6,20 +6,21 @@ with open("README.md") as fp:
 
 
 setuptools.setup(
-    name="magento_webshop",
+    name="Magento Webshop",
     version="0.0.1",
-
-    description="An empty CDK Python app",
+    page="https://dev.to/mjraadi",
+    license="MIT",
+    description="A CDK app to provision the required resources to run a flexible, scalable and cost-effective Magento webshop on top of AWS. ",
     long_description=long_description,
     long_description_content_type="text/markdown",
 
-    author="author",
+    author="Mohammadjavad Raadi",
 
-    package_dir={"": "magento_webshop"},
-    packages=setuptools.find_packages(where="magento_webshop"),
+    package_dir={"": "stacks"},
+    packages=setuptools.find_packages(where="stacks"),
 
     install_requires=[
-        "aws-cdk.core==1.130.0",
+        "aws-cdk.core==1.131.0",
     ],
 
     python_requires=">=3.6",
