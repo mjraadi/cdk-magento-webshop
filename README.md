@@ -48,10 +48,19 @@ command.
 
 ## Useful commands
 
-- `cdk ls` list all stacks in the app
-- `cdk synth` emits the synthesized CloudFormation template
-- `cdk deploy` deploy this stack to your default AWS account/region
-- `cdk diff` compare deployed stack with current state
+- `./cdk-run.sh AWSAccountId AWSRegion ls -c config=dev` list all stacks in the app in the development environment
+- `./cdk-run.sh AWSAccountId AWSRegion ls -c config=prod` list all stacks in the app in the production environment
+- `./cdk-run.sh AWSAccountId AWSRegion synth -c config=dev` emits the synthesized CloudFormation template in the development environment
+- `./cdk-run.sh AWSAccountId AWSRegion synth -c config=prod` emits the synthesized CloudFormation template in the production environment
+- `./cdk-run.sh AWSAccountId AWSRegion diff -c config=dev` compare deployed stack with current state in the development environment
+- `./cdk-run.sh AWSAccountId AWSRegion diff -c config=prod` compare deployed stack with current state in the production environment
+- `./cdk-run.sh AWSAccountId AWSRegion deploy -c config=dev` deploy this stack to your provided AWS account/region in the development environment
+- `./cdk-run.sh AWSAccountId AWSRegion deploy -c config=prod` deploy this stack to your provided AWS account/region in the production environment
 - `cdk docs` open CDK documentation
+
+**Notes:**
+
+- You can use `cdk-run.bat` to run the commands above on Windows
+- Be sure to replace `AWSAccountId` and `AWSRegion` with proper values
 
 Enjoy!
