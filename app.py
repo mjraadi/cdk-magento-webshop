@@ -5,6 +5,7 @@ import os
 from aws_cdk import core as cdk
 # importing stack constructs
 from stacks.vpc import VpcStack
+from stacks.security_groups import SecurityGroupsStack
 # importing util functions
 from utils import getBuildConfigs
 
@@ -37,6 +38,19 @@ _env = cdk.Environment(
 stackName = f"{buildConfigs['App']}-{buildConfigs['Environment']}"
 
 # provisioning VPC stack
-VpcStack(app, stackName, env=_env, buildConfigs=buildConfigs)
+vpcStack = VpcStack(
+  app, 
+  stackName, 
+  env=_env, 
+  buildConfigs=buildConfigs
+)
+
+# provisioning security groups
+securityGroupsStack = SecurityGroupsStack(
+  app,
+  f"{stackName}-sg",
+  env=_env,
+  vpc=vpcStack.getVpc
+)
 
 app.synth()
