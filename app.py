@@ -7,6 +7,7 @@ from aws_cdk import core as cdk
 from stacks.vpc import VpcStack
 from stacks.security_groups import SecurityGroupsStack
 from stacks.efs import EFSStack
+from stacks.bastion import BastionStack
 # importing util functions
 from utils import getBuildConfigs
 
@@ -62,6 +63,20 @@ efsStack = EFSStack(
   vpc=vpcStack.getVpc,
   sg=securityGroupsStack.getEfsSg,
   buildConfigs=buildConfigs,
+)
+
+bastionInstanceUserDataVarMappings = {
+  "__EFS_ID__": efsStack.getEfs.file_system_id,
+  "__EFS_ACCESS_POINT_ID__": efsStack.getEfsAp.access_point_id,
+}
+
+bastionStack = BastionStack(
+  app,
+  f"{stackName}-bastion-ec2",
+  env=_env,
+  vpc=vpcStack.getVpc,
+  sg=securityGroupsStack.getBastionEc2Sg,
+  mappings=bastionInstanceUserDataVarMappings,
 )
 
 app.synth()

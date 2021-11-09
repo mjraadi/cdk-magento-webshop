@@ -23,16 +23,6 @@ class SecurityGroupsStack(cdk.Stack):
       description="Security group for Bastion EC2 instances"
     )
 
-    # adding ingress/egress rules for our bastion EC2 SG
-
-    # allow ssh from anywhere
-    _bastion_ec2_sg.add_ingress_rule(
-      # TODO: read from environment context and limit the access
-      peer=_ec2.Peer.any_ipv4(),
-      connection=_ec2.Port.tcp(22),
-      description="Allow SSH access from anywhere"
-    )
-
     # adding ingress/egress rules for our EFS SG
 
     # allow NFS access to port 2049 from bastion EC2 SG
