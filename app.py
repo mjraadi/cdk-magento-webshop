@@ -6,6 +6,7 @@ from aws_cdk import core as cdk
 # importing stack constructs
 from stacks.vpc import VpcStack
 from stacks.security_groups import SecurityGroupsStack
+from stacks.efs import EFSStack
 # importing util functions
 from utils import getBuildConfigs
 
@@ -51,6 +52,16 @@ securityGroupsStack = SecurityGroupsStack(
   f"{stackName}-sg",
   env=_env,
   vpc=vpcStack.getVpc
+)
+
+# provisioning our EFS stack
+efsStack = EFSStack(
+  app,
+  f"{stackName}-efs",
+  env=_env,
+  vpc=vpcStack.getVpc,
+  sg=securityGroupsStack.getEfsSg,
+  buildConfigs=buildConfigs,
 )
 
 app.synth()
