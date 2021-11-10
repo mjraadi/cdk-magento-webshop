@@ -8,6 +8,7 @@ from stacks.vpc import VpcStack
 from stacks.security_groups import SecurityGroupsStack
 from stacks.rds import RDSStack
 from stacks.bastion import BastionStack
+from stacks.webservers import WebServersStack
 # importing util functions
 from utils import getBuildConfigs
 
@@ -65,7 +66,7 @@ rdsStack = RDSStack(
   buildConfigs=buildConfigs,
 )
 
-bastionInstanceUserDataVarMappings = {
+userDataVarMappings = {
   "__AWS_ACCOUNT_ID__": _account,
   "__AWS_REGION__": _region,
   "__MYSQL_INSTANCE_ADDRESS__": rdsStack.getRds.db_instance_endpoint_address,
@@ -78,8 +79,20 @@ bastionStack = BastionStack(
   env=_env,
   vpc=vpcStack.getVpc,
   sg=securityGroupsStack.getBastionEc2Sg,
-  mappings=bastionInstanceUserDataVarMappings,
+  mappings=userDataVarMappings,
   mysqlSecret=rdsStack.getMySqlSecret,
+)
+
+webServersStack = WebServersStack(
+  app,
+  f"{stackName}-webservers",
+  env=_env,
+  vpc=vpcStack.getVpc,
+  webserverEc2SG=securityGroupsStack.getWebserverEc2Sg,
+  webserverAlbSG=securityGroupsStack.getWebserverAlbSg,
+  mappings=userDataVarMappings,
+  mysqlSecret=rdsStack.getMySqlSecret,
+  buildConfigs=buildConfigs,
 )
 
 app.synth()

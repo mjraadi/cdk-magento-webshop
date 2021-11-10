@@ -77,11 +77,11 @@ class BastionStack(cdk.Stack):
       ),
     )
 
-    # assigning our EFS resource to be able to reference it
+    # assigning our resource to be able to reference it
     # across stacks
     self._bastionInstance = bastionInstance
 
-    # output EFS resource
+    # output resource
     cdk.CfnOutput(
       self,
       "bastionInstancePublicIpOutput",
