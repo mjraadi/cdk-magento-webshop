@@ -5,15 +5,11 @@ exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
 echo "Hello from user-data!"
 # define variables
-EFS_ID="${__EFS_ID__}"
-EFS_ACCESS_POINT_ID="${__EFS_ACCESS_POINT_ID__}"
+MY_SQL_INSTANCE_ADDRESS="${__MY_SQL_INSTANCE_ADDRESS__}"
 
 # install the required packages
 sudo yum update -y
-sudo yum -y install amazon-efs-utils
+sudo yum -y install mysql
 
-# mount EFS resource
-sudo mkdir -p /efs
-sudo mount -t efs -o tls,accesspoint=${!EFS_ACCESS_POINT_ID} ${!EFS_ID}:/ /efs
-echo hello > /efs/hello.txt
-ls -la /efs
+# TODO: test connection, get credentionals from secrets manager
+# mysql -h ${!__MY_SQL_INSTANCE_ADDRESS__} -u user -p<whatever> -e"quit"
