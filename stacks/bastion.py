@@ -2,7 +2,7 @@ import os.path
 from aws_cdk import core as cdk
 from aws_cdk import aws_ec2 as _ec2
 from aws_cdk import aws_iam as _iam
-# from aws_cdk.aws_s3_assets import Asset
+from aws_cdk import aws_secretsmanager as _sm
 
 currentDirName = os.path.dirname(__file__)
 
@@ -16,7 +16,7 @@ linux_ami = _ec2.AmazonLinuxImage(
 )
 
 class BastionStack(cdk.Stack):
-  def __init__(self, scope: cdk.Construct, construct_id: str, vpc: _ec2.IVpc, sg:_ec2.ISecurityGroup, mappings, **kwargs) -> None:
+  def __init__(self, scope: cdk.Construct, construct_id: str, vpc: _ec2.IVpc, sg:_ec2.ISecurityGroup, mappings,mysqlSecret: _sm.ISecret,  **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     # Instance Role and SSM Managed Policy
@@ -29,6 +29,27 @@ class BastionStack(cdk.Stack):
       _iam.ManagedPolicy.from_aws_managed_policy_name(
         "AmazonSSMManagedInstanceCore"
       )
+    )
+    
+    # create policy statement to be able to read mysql secret
+    bastionGetSecretValuePolicyStatement = _iam.PolicyStatement(
+      actions=[
+        "secretsmanager:GetSecretValue"
+      ],
+      effect=_iam.Effect.ALLOW,
+      resources=[mysqlSecret.secret_full_arn],
+    )
+    
+    bastionGetSecretValuePolicy = _iam.Policy(
+      self,
+      "bastionPolicy",
+      statements=[
+        bastionGetSecretValuePolicyStatement
+      ]
+    )
+    
+    _role.attach_inline_policy(
+      policy=bastionGetSecretValuePolicy,
     )
 
     with open("user_data/configure_bastion_instance.sh", 'r') as user_data_h:

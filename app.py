@@ -66,7 +66,10 @@ rdsStack = RDSStack(
 )
 
 bastionInstanceUserDataVarMappings = {
-  "__MY_SQL_INSTANCE_ADDRESS__": rdsStack.getRds.db_instance_endpoint_address,
+  "__AWS_ACCOUNT_ID__": _account,
+  "__AWS_REGION__": _region,
+  "__MYSQL_INSTANCE_ADDRESS__": rdsStack.getRds.db_instance_endpoint_address,
+  "__MYSQL_SECRET_NAME__": rdsStack.getMySqlSecret.secret_name,
 }
 
 bastionStack = BastionStack(
@@ -76,6 +79,7 @@ bastionStack = BastionStack(
   vpc=vpcStack.getVpc,
   sg=securityGroupsStack.getBastionEc2Sg,
   mappings=bastionInstanceUserDataVarMappings,
+  mysqlSecret=rdsStack.getMySqlSecret,
 )
 
 app.synth()
