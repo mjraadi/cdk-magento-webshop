@@ -6,3 +6,7 @@ aws-cdk.aws-iam
 aws-cdk.aws-secretsmanager
 aws-cdk.aws-autoscaling
 aws-cdk.aws-elasticloadbalancingv2
+aws-cdk.aws-lambda
+aws-cdk.aws-logs
+aws-cdk.aws-s3
+aws-cdk.aws-s3-notifications

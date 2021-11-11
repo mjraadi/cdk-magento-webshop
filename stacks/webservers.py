@@ -21,14 +21,14 @@ class WebServersStack(cdk.Stack):
   def __init__(
     self, 
     scope: cdk.Construct, 
-    construct_id: str
-    ,vpc: _ec2.IVpc
-    ,webserverEc2SG:_ec2.ISecurityGroup
-    ,webserverAlbSG: _ec2.ISecurityGroup 
-    ,mappings
-    ,mysqlSecret: _sm.ISecret
-    ,buildConfigs
-    ,**kwargs
+    construct_id: str,
+    vpc: _ec2.IVpc,
+    webserverEc2SG:_ec2.ISecurityGroup,
+    webserverAlbSG: _ec2.ISecurityGroup,
+    mappings,
+    mysqlSecret: _sm.ISecret,
+    buildConfigs,
+    **kwargs,
   ) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
@@ -138,6 +138,7 @@ class WebServersStack(cdk.Stack):
     # across stacks
     self._webserverALB = webserverALB
     self._webserverASG = webserverASG
+    self._webserverRole = _role
 
     # output resource
     cdk.CfnOutput(
@@ -152,4 +153,7 @@ class WebServersStack(cdk.Stack):
     return self._webserverALB
   @property
   def getWebserverAsg(self) -> _asg.IAutoScalingGroup:
-    return self.webserverASG
+    return self._webserverASG
+  @property
+  def getWebserverRole(self) -> _iam.IRole:
+    return self._webserverRole

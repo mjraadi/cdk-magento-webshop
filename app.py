@@ -6,12 +6,12 @@ from aws_cdk import core as cdk
 # importing stack constructs
 from stacks.vpc import VpcStack
 from stacks.security_groups import SecurityGroupsStack
+from stacks.functions import FunctionsStack
 from stacks.rds import RDSStack
 from stacks.bastion import BastionStack
 from stacks.webservers import WebServersStack
 # importing util functions
 from utils import getBuildConfigs
-
 
 # initiating a CDK app
 app = cdk.App()
@@ -56,6 +56,15 @@ securityGroupsStack = SecurityGroupsStack(
   vpc=vpcStack.getVpc
 )
 
+# provisioning functions
+functionsStack = FunctionsStack(
+  app,
+  f"{stackName}-fn",
+  env=_env,
+  vpc=vpcStack.getVpc,
+  buildConfigs=buildConfigs,
+)
+
 # provisioning our RDS stack
 rdsStack = RDSStack(
   app,
@@ -93,6 +102,10 @@ webServersStack = WebServersStack(
   mappings=userDataVarMappings,
   mysqlSecret=rdsStack.getMySqlSecret,
   buildConfigs=buildConfigs,
+)
+
+functionsStack.getWebShopContentBucket.grant_read_write(
+  webServersStack.getWebserverRole ,
 )
 
 app.synth()
