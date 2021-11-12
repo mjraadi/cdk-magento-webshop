@@ -142,6 +142,7 @@ class WebServersStack(cdk.Stack):
       default_behavior={
         "origin": _cf_origins.LoadBalancerV2Origin(
           webserverALB,
+          protocol_policy=_cloudfront.OriginProtocolPolicy.HTTP_ONLY,
         )
       }
     )
