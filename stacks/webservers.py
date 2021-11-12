@@ -4,6 +4,8 @@ from aws_cdk import aws_ec2 as _ec2
 from aws_cdk import aws_iam as _iam
 from aws_cdk import aws_secretsmanager as _sm
 from aws_cdk import aws_autoscaling as _asg
+from aws_cdk import aws_cloudfront as _cloudfront
+from aws_cdk import aws_cloudfront_origins as _cf_origins
 from aws_cdk import aws_elasticloadbalancingv2 as _elbv2
 
 currentDirName = os.path.dirname(__file__)
@@ -133,11 +135,23 @@ class WebServersStack(cdk.Stack):
       "cpu-util-scaling",
       target_utilization_percent=75
     )
+    
+    webserversCfDistribution = _cloudfront.Distribution(
+      self, 
+      "webserversCfDistribution",
+      default_behavior={
+        "origin": _cf_origins.LoadBalancerV2Origin(
+          webserverALB,
+          protocol_policy=_cloudfront.OriginProtocolPolicy.HTTP_ONLY,
+        )
+      }
+    )
 
     # assigning our resource to be able to reference it
     # across stacks
     self._webserverALB = webserverALB
     self._webserverASG = webserverASG
+    self._webserversCfDistribution = webserversCfDistribution
     self._webserverRole = _role
 
     # output resource
@@ -157,3 +171,6 @@ class WebServersStack(cdk.Stack):
   @property
   def getWebserverRole(self) -> _iam.IRole:
     return self._webserverRole
+  @property
+  def getWebserverCfDistribution(self) -> _cloudfront.IDistribution:
+    return self._webserversCfDistribution
