@@ -42,8 +42,9 @@ This is an AWS CDK app to provision the required resources to run a flexible, sc
 
 ### Project Configuration
 
-The project implements the use of CDK runtime contexts to dynamically create per-environment configurations and resources. Learn more [here](https://dev.to/aws-builders/aws-cdk-per-environment-configuration-patterns-48m6).
-The project defines two `dev` and `prod` environments and resources are configured depending the on that. For example, the project creates an RDS MySQL instance with minimum configuration for testing on the `dev` environment, and creates a powerful and highly available database on the `prod` environment. The environment context configuration is passed to CDK using `-c config=dev|prod`. Check out the environment specific configuration values on `cdk.json` file.
+The project implements the use of CDK runtime contexts to dynamically create per-environment configurations and resources.
+The project defines two `dev` and `prod` environments and resources are configured depending on that. For example, the project creates an RDS MySQL instance with minimum configuration for testing on the `dev` environment, and creates a powerful and highly available database on the `prod` environment. The environment context configuration is passed to CDK using `-c config=dev|prod`. Check out the environment specific configuration values on `cdk.json` file.
+Learn more CDK runtime contexts [here](https://dev.to/aws-builders/aws-cdk-per-environment-configuration-patterns-48m6).
 
 ### Project Setup
 
@@ -122,7 +123,7 @@ $ ./cdk-run.sh AWSAccountId AWSRegion deploy -c config=dev --all
 You can choose either the `dev` or `prod` config. Just know that `prod` configuration creates more powerful, highly-available and multiple replicas of services.
 It take about 15-20 minutes to provision all the resources on the `dev` environment.
 
-!()["assets/magento-cf-dns.png"]
+![](assets/magento-cf-dns.png)
 
 ## Destroy it All
 
