@@ -73,13 +73,6 @@ class WebServersStack(cdk.Stack):
       policy=webserverGetSecretValuePolicy,
     )
 
-    with open("user_data/configure_webserver_instance.sh", 'r') as user_data_h:
-      # Use a substitution
-      user_data_sub = cdk.Fn.sub(user_data_h.read(), mappings)
-
-    # Import substitution object into user_data set
-    _user_data = _ec2.UserData.custom(user_data_sub)
-
     webserverALB = _elbv2.ApplicationLoadBalancer(
       self,
       "webserverALB",
@@ -87,6 +80,16 @@ class WebServersStack(cdk.Stack):
       internet_facing=True,
       security_group=webserverAlbSG,
     )
+    
+    mappings["__ALB_DNS_NAME__"] = webserverALB.load_balancer_dns_name
+    
+    with open("user_data/configure_webserver_instance.sh", 'r') as user_data_h:
+      # Use a substitution
+      user_data_sub = cdk.Fn.sub(user_data_h.read(), mappings)
+
+    # Import substitution object into user_data set
+    _user_data = _ec2.UserData.custom(user_data_sub)
+
     
     webserverAlbListener = webserverALB.add_listener(
       "webserverAlbHttpListener",
