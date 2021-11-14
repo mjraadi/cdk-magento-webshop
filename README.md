@@ -2,6 +2,15 @@
 
 This is a CDK app to provision the required resources to run a flexible, scalable and cost-effective Magento webshop on top of AWS.
 
+### 🧰 Prerequisites
+
+   - 🛠 AWS Account & User - [Get help here](https://cdkworkshop.com/15-prerequisites/200-account.html)
+   - 🛠 AWS CLI Installed & Configured - [Get help here](https://cdkworkshop.com/15-prerequisites/100-awscli.html)
+   - 🛠 Node.js Installed - [Get help here](https://cdkworkshop.com/15-prerequisites/300-nodejs.html)
+   - 🛠 AWS CDK Installed & Configured - [Get help here](https://cdkworkshop.com/15-prerequisites/500-toolkit.html)
+   - 🛠 Python 3 Installed & Configured - [Get help here](https://cdkworkshop.com/15-prerequisites/600-python.html)
+
+
 ### Project Setup
 
 This project is set up like a standard Python project. The initialization
@@ -48,6 +57,9 @@ command.
 
 ## Useful commands
 
+- `./cdk-run.sh AWSAccountId AWSRegion synth -c config=dev` synthesize the CloudFormation template for this code in the development environment
+- `./cdk-run.sh AWSAccountId AWSRegion synth -c config=prod` synthesize the CloudFormation template for this code in the production environment
+- `./cdk-run.sh AWSAccountId AWSRegion bootstrap -c config=dev` bootstraps the CDK toolkit for this porject in the development environment(needs to be run only once for each account and region)
 - `./cdk-run.sh AWSAccountId AWSRegion ls -c config=dev` list all stacks in the app in the development environment
 - `./cdk-run.sh AWSAccountId AWSRegion ls -c config=prod` list all stacks in the app in the production environment
 - `./cdk-run.sh AWSAccountId AWSRegion synth -c config=dev` emits the synthesized CloudFormation template in the development environment
@@ -58,8 +70,9 @@ command.
 - `./cdk-run.sh AWSAccountId AWSRegion deploy -c config=prod` deploy this stack to your provided AWS account/region in the production environment
 - `cdk docs` open CDK documentation
 
-**Notes:**
+**Important Notes:**
 
+- If you have multiple AWS profiles configured through AWS CLI, be sure to set which profile you want CDK to choose by executing: `export AWS_PROFILE=YOUR_PROFILE_NAME`
 - You can use `cdk-run.bat` to run the commands above on Windows
 - Be sure to replace `AWSAccountId` and `AWSRegion` with proper values
 
