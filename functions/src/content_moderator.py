@@ -46,8 +46,25 @@ def detectLabels(objectFile):
   except Exception as e:
     LOGGER.error(f"{str(e)}")
     raise
-  # TODO: set a "inappropriateContent" boolean tag to the object
   return labels
+
+def setInappropriateContentTag(bucketName, objectKey, value):
+  try:
+    _s3_client.put_object_tagging(
+      Bucket=bucketName,
+      Key=objectKey,
+      Tagging={
+        'TagSet': [
+          {
+            'Key': 'InappropriateContent',
+            'Value': value
+          },
+        ]
+      },
+    )
+  except Exception as e:
+    LOGGER.error(f"{str(e)}")
+    raise
 
 def lambda_handler(event, context):
   global LOGGER
@@ -66,6 +83,16 @@ def lambda_handler(event, context):
 
       file = readObject(bucketName, objectKey)
       lables = detectLabels(file)
+      
+      LOGGER.info(f"tagging object {objectKey} on bucket {bucketName}")
+
+      if len(lables) > 0:
+        setInappropriateContentTag(bucketName, objectKey, 'true')
+        LOGGER.info(f"object {objectKey} on bucket {bucketName} has been tagged inappropriate")
+      else: 
+        setInappropriateContentTag(bucketName, objectKey, 'false')
+        LOGGER.info(f"object {objectKey} on bucket {bucketName} is not inappropriate")
+
       response = {
         "statusCode": 200,
         "body": json.dumps({"message": {

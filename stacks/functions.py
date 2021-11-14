@@ -89,7 +89,7 @@ class FunctionsStack(cdk.Stack):
       removal_policy=removalPolicy,
     )
     
-    webShopContentBucket.grant_read(
+    webShopContentBucket.grant_read_write(
       contentModeratorFn.role,
     )
 
