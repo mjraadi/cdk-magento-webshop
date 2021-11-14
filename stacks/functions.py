@@ -89,8 +89,25 @@ class FunctionsStack(cdk.Stack):
       removal_policy=removalPolicy,
     )
     
-    webShopContentBucket.grant_read_write(
+    webShopContentBucket.grant_read(
       contentModeratorFn.role,
+    )
+    
+    # allowing the function to put tags on this S3 bucket objects
+    webShopContentBucket.add_to_resource_policy(
+      permission=_iam.PolicyStatement(
+        actions=[
+          "S3:PutObjectTagging"
+        ],
+        effect=_iam.Effect.ALLOW,
+        resources=[
+          webShopContentBucket.arn_for_objects("*"),
+          webShopContentBucket.bucket_arn,
+        ],
+        principals=[
+          _iam.ArnPrincipal(contentModeratorFn.role.role_arn)
+        ]
+      )
     )
 
     # create S3 bucket notification
