@@ -8,7 +8,7 @@ AWS_ACCOUNT_ID="${__AWS_ACCOUNT_ID__}"
 AWS_REGION="${__AWS_REGION__}"
 MYSQL_INSTANCE_ADDRESS="${__MYSQL_INSTANCE_ADDRESS__}"
 MYSQL_SECRET_NAME="${__MYSQL_SECRET_NAME__}"
-ALB_DNS_NAME="${__ALB_DNS_NAME__}"
+CF_DISTRIBUTION_DOMAIN_NAME="${__CF_DISTRIBUTION_DOMAIN_NAME__}"
 
 echo "Hello from user-data!"
 # install the required packages
@@ -22,18 +22,18 @@ php -v && echo "PHP installed successfully"
 # retriveing mysql credentials from secrets manager
 MYSQL_USER=$(aws secretsmanager get-secret-value \
   --region ${!AWS_REGION} --secret-id ${!MYSQL_SECRET_NAME} \
-  --query SecretString --output text | jq -r .username)
+--query SecretString --output text | jq -r .username)
 
 MYSQL_PWD=$(aws secretsmanager get-secret-value \
   --region ${!AWS_REGION} --secret-id ${!MYSQL_SECRET_NAME} \
-  --query SecretString --output text | jq -r .password)
+--query SecretString --output text | jq -r .password)
 
 # testing mysql connection
 # TODO: the password will be visible on user data logs. find a way
 # to prevent this
 mysql -h ${!MYSQL_INSTANCE_ADDRESS} -u ${!MYSQL_USER} \
-  -p${!MYSQL_PWD} -e"quit" &&
-  echo "connecting to MySQL server was successful"
+-p${!MYSQL_PWD} -e"quit" &&
+echo "connecting to MySQL server was successful"
 
 # configuring php memory limit
 sed -i 's/memory_limit\s*=.*/memory_limit=1024M/g' /etc/php.ini
@@ -74,20 +74,30 @@ chmod u+x bin/magento
 
 # install magento
 bin/magento setup:install \
-  --base-url=http://${!ALB_DNS_NAME}/ \
-  --db-host=${!MYSQL_INSTANCE_ADDRESS} \
-  --db-name=webshop \
-  --db-user=${!MYSQL_USER} \
-  --db-password=${!MYSQL_PWD} \
-  --admin-firstname=admin \
-  --admin-lastname=admin \
-  --admin-email=admin@admin.com \
-  --admin-user=admin \
-  --admin-password=${!MYSQL_PWD}@ \
-  --language=en_US \
-  --currency=USD \
-  --timezone=America/Chicago \
-  --use-rewrites=1
+--base-url=http://${!CF_DISTRIBUTION_DOMAIN_NAME}/ \
+--db-host=${!MYSQL_INSTANCE_ADDRESS} \
+--db-name=webshop \
+--db-user=${!MYSQL_USER} \
+--db-password=${!MYSQL_PWD} \
+--admin-firstname=admin \
+--admin-lastname=admin \
+--admin-email=admin@admin.com \
+--admin-user=admin \
+--admin-password=${!MYSQL_PWD}@ \
+--language=en_US \
+--currency=USD \
+--timezone=America/Chicago \
+--use-rewrites=1
+
+# configure Magento URLs
+php bin/magento config:set web/unsecure/base_url http://${!CF_DISTRIBUTION_DOMAIN_NAME}/
+php bin/magento config:set web/unsecure/base_link_url http://${!CF_DISTRIBUTION_DOMAIN_NAME}/
+php bin/magento config:set web/secure/enable_upgrade_insecure 1
+php bin/magento config:set web/secure/base_url https://${!CF_DISTRIBUTION_DOMAIN_NAME}/
+php bin/magento config:set web/secure/base_link_url https://${!CF_DISTRIBUTION_DOMAIN_NAME}/
+php bin/magento config:set web/secure/use_in_frontend 1
+php bin/magento config:set web/secure/use_in_adminhtml 1
+php bin/magento config:set web/url/redirect_to_base 0
 
 # clean magento cache and recompile static assets
 php bin/magento cache:clean

@@ -81,7 +81,21 @@ class WebServersStack(cdk.Stack):
       security_group=webserverAlbSG,
     )
     
-    mappings["__ALB_DNS_NAME__"] = webserverALB.load_balancer_dns_name
+    defaultCfBehavior = _cloudfront.BehaviorOptions(
+      viewer_protocol_policy=_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      origin=_cf_origins.LoadBalancerV2Origin(
+        webserverALB,
+        protocol_policy=_cloudfront.OriginProtocolPolicy.HTTP_ONLY,
+      )
+    )
+    
+    webserversCfDistribution = _cloudfront.Distribution(
+      self, 
+      "webserversCfDistribution",
+      default_behavior=defaultCfBehavior,
+    )
+    
+    mappings["__CF_DISTRIBUTION_DOMAIN_NAME__"] = webserversCfDistribution.distribution_domain_name
     
     with open("user_data/configure_webserver_instance.sh", 'r') as user_data_h:
       # Use a substitution
@@ -138,17 +152,6 @@ class WebServersStack(cdk.Stack):
       "cpu-util-scaling",
       target_utilization_percent=75
     )
-    
-    webserversCfDistribution = _cloudfront.Distribution(
-      self, 
-      "webserversCfDistribution",
-      default_behavior={
-        "origin": _cf_origins.LoadBalancerV2Origin(
-          webserverALB,
-          protocol_policy=_cloudfront.OriginProtocolPolicy.HTTP_ONLY,
-        )
-      }
-    )
 
     # assigning our resource to be able to reference it
     # across stacks
@@ -160,9 +163,10 @@ class WebServersStack(cdk.Stack):
     # output resource
     cdk.CfnOutput(
       self,
-      "webserverALBOutput",
-      value=webserverALB.load_balancer_dns_name,
-      export_name="webserverAlbDnsName"
+      "MagentoWebshopStoreFrontURL",
+      value=f"https://{webserversCfDistribution.distribution_domain_name}",
+      export_name="MagentoWebshopStoreFrontURL",
+      description="This is the URL of the Magento webshop. The store loads once all the provisioning, installation, and configurations are successfully finished."
     )
 
   @property
