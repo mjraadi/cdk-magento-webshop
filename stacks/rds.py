@@ -48,6 +48,7 @@ class RDSStack(cdk.Stack):
       vpc_subnets=_ec2.SubnetSelection(
         subnet_type=_ec2.SubnetType.ISOLATED,
       ),
+      database_name="webshop",
       multi_az=isProd,
       security_groups=[sg],
       allocated_storage=storageSize,
