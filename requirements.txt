@@ -12,3 +12,5 @@ aws-cdk.aws-s3
 aws-cdk.aws-s3-notifications
 aws-cdk.aws-cloudfront
 aws-cdk.aws-cloudfront-origins
+aws_cdk.assertions
+pytest 
